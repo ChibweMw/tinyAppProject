@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+  <form method="POST" action="/urls/<%= shortURL %>">
+    <label for="name">SHORTurl: <%= shortURL %></label></br>
+    <input id="name" type="text" name="newUrl" value="<%= urls[shortURL] %>">
+    <button type="submit">Update</button>
+  </form>
+</body>
+</html>
