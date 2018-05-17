@@ -14,6 +14,19 @@ let urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
 function generateRandomString(num) {
   let shortURL = ''; //an empty string to hold the future random string
   let urlLength = num; //random string length
@@ -49,14 +62,38 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect("/urls");
 });
 
+//user registration
+app.get("/register", (req, res) => {
+  //show registration page
+  res.render("users_register")
+});
+
 //for edit/update page
 app.get("/urls/:id", (req, res) => {
   let templateVars = req.params.id;
   res.render("urls_show", { shortURL : templateVars, urls : urlDatabase });
 });
 
+app.post("/register" , (req, res) => {
+  //add new user to `users` object
+  if (!req.body.email || !req.body.password) {
+    console.log("please fill in both fields")
+  } else if (req.body.email && req.body.password) {
+    for (let id in users) {
+      if (req.body.email === users[id].email) {
+        console.log("That email is already in use.");
+        return;
+      }
+    }
+    let newUserId = generateRandomString(9);
+    users[newUserId] = { id : newUserId, email : req.body.email,  password : req.body.password };
+    console.log(users);
+    res.cookie("user_id", newUserId);
+    res.redirect("/urls");
+  }
+});
+
 app.post("/urls", (req, res) => {
-  // console.log(req.body);
   res.send(`Okay`);
 });
 
@@ -81,7 +118,6 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-
   let id = req.params.id
   delete urlDatabase[id];
   res.redirect("/urls");
