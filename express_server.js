@@ -46,13 +46,13 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies["username"] };
-  // console.log(templateVars);
+  let templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
+  console.log(users[req.cookies["user_id"]]);
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["username"] };
+  let templateVars = { user: users[req.cookies["user_id"]] };
   res.render("urls_new", templateVars);
 });
 
@@ -68,6 +68,11 @@ app.get("/register", (req, res) => {
   res.render("users_register")
 });
 
+//login page
+app.get("/login", (req, res) => {
+  res.render("users_login");
+});
+
 //for edit/update page
 app.get("/urls/:id", (req, res) => {
   let templateVars = req.params.id;
@@ -78,10 +83,11 @@ app.post("/register" , (req, res) => {
   //add new user to `users` object
   if (!req.body.email || !req.body.password) {
     console.log("please fill in both fields")
+    res.status(400).send("please fill in both fields");
   } else if (req.body.email && req.body.password) {
     for (let id in users) {
       if (req.body.email === users[id].email) {
-        console.log("That email is already in use.");
+        res.status(400).send("That email is already in use.")
         return;
       }
     }
@@ -105,7 +111,7 @@ app.post("/login", (req, res) => {
 
 //logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 

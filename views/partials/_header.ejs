@@ -1,6 +1,6 @@
 <h2>tyniApp</h2>
-<% if (username) { %>
-  <label for="username"><%= username %></label>
+<% if (user && user.email) { %>
+  <label for="username"><%= user.email %></label>
   <form method="POST" action="/logout">
     <button type="submit">Logout</button>
   </form>
