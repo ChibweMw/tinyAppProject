@@ -66,6 +66,12 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
+//logout
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
+});
+
 //POST request for url update
 app.post("/urls/:id", (req, res) => {
   let templateVars = req.params.id;
