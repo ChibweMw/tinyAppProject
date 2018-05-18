@@ -74,27 +74,38 @@ app.get("/urls/new", (req, res) => {
 //go to link!
 app.get("/u/:shortURL", (req, res) => {
   let newLink = req.params.shortURL;
-  console.log(newLink);
-
   res.redirect(urlDatabase[newLink].longURL);
 });
 
 //user registration
 app.get("/register", (req, res) => {
-  //show registration page
   res.render("users_register")
 });
 
 //login page
 app.get("/login", (req, res) => {
-  res.render("users_login");
+  if (!req.cookies["user_id"]) {
+    console.log("Welcome, please login!")
+    res.render("users_login");
+  } else {
+    console.log("You are already logged in!")
+    res.redirect("/urls");
+  }
 });
 
 //for edit/update page
 app.get("/urls/:id", (req, res) => {
+  const currentUser = req.cookies["user_id"];
+  console.log(currentUser);
   let templateVars = req.params.id;
   console.log(req.params.id);
+  if (currentUser === urlDatabase[templateVars].userID) {
+  console.log(req.params.id);
   res.render("urls_show", { shortURL : templateVars, urls : urlDatabase[templateVars].longURL });
+  } else {
+    console.log("NOT YOUR URL TO EDITA!!");
+    res.redirect("/login");
+  }
 });
 
 app.post("/register" , (req, res) => {
@@ -126,7 +137,11 @@ app.post("/urls", (req, res) => {
 
 //login
 app.post("/login", (req, res) => {
-  console.log(req.body);
+  logUserIn(req, res);
+  loginError(req, res);
+});
+
+function logUserIn (req,res) {
   for (let id in users) {
     if (req.body.email === users[id].email && req.body.password === users[id].password) {
       res.cookie("user_id", users[id].id);
@@ -134,6 +149,9 @@ app.post("/login", (req, res) => {
       return;
     }
   }
+}
+
+function loginError(req, res) {
   for (let id in users) {
     if (req.body.email !== users[id].email || req.body.password !== users[id].password) {
       console.log("Submitted :", req.body, "Valid :", users[id]);
@@ -141,7 +159,7 @@ app.post("/login", (req, res) => {
       return;
     }
   }
-});
+}
 
 //logout
 app.post("/logout", (req, res) => {
