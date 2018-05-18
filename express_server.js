@@ -47,7 +47,6 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
-  console.log(users[req.cookies["user_id"]]);
   res.render("urls_index", templateVars);
 });
 
@@ -82,18 +81,17 @@ app.get("/urls/:id", (req, res) => {
 app.post("/register" , (req, res) => {
   //add new user to `users` object
   if (!req.body.email || !req.body.password) {
-    console.log("please fill in both fields")
+    console.log("please fill in both fields");
     res.status(400).send("please fill in both fields");
   } else if (req.body.email && req.body.password) {
     for (let id in users) {
       if (req.body.email === users[id].email) {
-        res.status(400).send("That email is already in use.")
+        res.status(400).send("That email is already in use.");
         return;
       }
     }
     let newUserId = generateRandomString(9);
     users[newUserId] = { id : newUserId, email : req.body.email,  password : req.body.password };
-    console.log(users);
     res.cookie("user_id", newUserId);
     res.redirect("/urls");
   }
@@ -105,8 +103,21 @@ app.post("/urls", (req, res) => {
 
 //login
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect("/urls");
+  console.log(req.body);
+  for (let id in users) {
+    if (req.body.email === users[id].email && req.body.password === users[id].password) {
+      res.cookie("user_id", users[id].id);
+      res.redirect("/urls");
+      return;
+    }
+  }
+  for (let id in users) {
+    if (req.body.email !== users[id].email || req.body.password !== users[id].password) {
+      console.log("Submitted :", req.body, "Valid :", users[id]);
+      res.status(403).send("Wrong email or password.");
+      return;
+    }
+  }
 });
 
 //logout
