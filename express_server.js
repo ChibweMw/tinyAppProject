@@ -38,8 +38,17 @@ function generateRandomString(num) {
     //do this `num` times. `num` being our desired string length
     shortURL += charList[Math.floor(Math.random() * charList.length)];
   }
-
   return shortURL.toString();
+}
+
+function urlsForUser(id) {
+  let userUrls = {};
+  for (let uID in urlDatabase) {
+    if (urlDatabase[uID].userID === id) {
+      userUrls[uID] = urlDatabase[uID];
+    }
+  }
+  return userUrls;
 }
 
 app.get("/hello", (req, res) => {
@@ -47,15 +56,14 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  console.log(urlDatabase);
-  let templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
+  const currentUser = req.cookies;
+  let templateVars = { urls: urlsForUser(currentUser['user_id']), user: users[req.cookies["user_id"]] };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   const currentUser = req.cookies;
   if (currentUser['user_id']) {
-    console.log("singed in:", currentUser['user_id']);
     let templateVars = { user: users[currentUser["user_id"]] };
     res.render("urls_new", templateVars);
   } else {
