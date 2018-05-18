@@ -10,8 +10,8 @@ app.use(cookies());
 app.set("view engine", "ejs");
 
 let urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": { userID : "b2xVn2", longURL : "http://www.lighthouselabs.ca" },
+  "9sm5xK": { userID : "9sm5xK", longURL : "http://www.google.com" }
 };
 
 const users = {
@@ -38,7 +38,8 @@ function generateRandomString(num) {
     //do this `num` times. `num` being our desired string length
     shortURL += charList[Math.floor(Math.random() * charList.length)];
   }
-  return shortURL;
+
+  return shortURL.toString();
 }
 
 app.get("/hello", (req, res) => {
@@ -51,14 +52,21 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { user: users[req.cookies["user_id"]] };
-  res.render("urls_new", templateVars);
+  const currentUser = req.cookies;
+  if (currentUser['user_id']) {
+    let templateVars = { user: users[currentUser["user_id"]] };
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
+//go to link!
 app.get("/u/:shortURL", (req, res) => {
-  //turn the longURL into a random 6 character string
-  let shortURL = generateRandomString(6);
-  res.redirect("/urls");
+  let newLink = req.params.shortURL;
+  console.log(newLink);
+
+  res.redirect(urlDatabase[newLink].longURL);
 });
 
 //user registration
@@ -75,7 +83,8 @@ app.get("/login", (req, res) => {
 //for edit/update page
 app.get("/urls/:id", (req, res) => {
   let templateVars = req.params.id;
-  res.render("urls_show", { shortURL : templateVars, urls : urlDatabase });
+  console.log(req.params.id);
+  res.render("urls_show", { shortURL : templateVars, urls : urlDatabase[templateVars].longURL });
 });
 
 app.post("/register" , (req, res) => {
@@ -97,8 +106,12 @@ app.post("/register" , (req, res) => {
   }
 });
 
+//post new urls
 app.post("/urls", (req, res) => {
-  res.send(`Okay`);
+  // console.log(req.cookies["user_id"]);
+  let shortURL = generateRandomString(6);
+  urlDatabase[shortURL] = { userID : req.cookies["user_id"], longURL : req.body.longURL };
+  res.redirect("/urls");
 });
 
 //login
@@ -126,11 +139,12 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-//POST request for url update
+//POST request for url update use newUrl
 app.post("/urls/:id", (req, res) => {
   let templateVars = req.params.id;
-  urlDatabase[templateVars] = req.body.newUrl;
-
+  console.log(req.params.id);
+  console.log(req.body);
+  urlDatabase[templateVars].longURL = req.body.newUrl;
   res.redirect("/urls");
 });
 

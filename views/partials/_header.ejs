@@ -1,10 +1,11 @@
-<h2>tyniApp</h2>
+<a href="/urls"><h2>tyniApp</h2></a>
+<a href="/urls/new">Create New Link!</a></br>
 <% if (user && user.email) { %>
   <label for="user_id"><%= user.email %></label>
   <form method="POST" action="/logout">
     <button type="submit">Logout</button>
   </form>
 <% } else { %>
-  <a href="/register">Register</a>
+  <a href="/register"> <label>Register</label></a>
   <a href="/login">Login</a>
 <% } %>
