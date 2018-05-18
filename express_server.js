@@ -10,8 +10,8 @@ app.use(cookies());
 app.set("view engine", "ejs");
 
 let urlDatabase = {
-  "b2xVn2": { userID : "b2xVn2", longURL : "http://www.lighthouselabs.ca" },
-  "9sm5xK": { userID : "9sm5xK", longURL : "http://www.google.com" }
+  "b2xVn2": { userID : "admin", longURL : "http://www.lighthouselabs.ca" },
+  "9sm5xK": { userID : "admin", longURL : "http://www.google.com" }
 };
 
 const users = {
@@ -47,6 +47,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  console.log(urlDatabase);
   let templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
   res.render("urls_index", templateVars);
 });
@@ -54,6 +55,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const currentUser = req.cookies;
   if (currentUser['user_id']) {
+    console.log("singed in:", currentUser['user_id']);
     let templateVars = { user: users[currentUser["user_id"]] };
     res.render("urls_new", templateVars);
   } else {

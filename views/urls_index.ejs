@@ -8,14 +8,14 @@
   <header>
     <% include ./partials/_header %>
   </header>
-  <% if (user && user.email) { %>
+  <% if (user && user.id) { %>
     <% for (let url in urls) { %>
       <form method="POST" action="/urls/<%= urls[url].longURL %>/delete">
-        <a href="/u/<%= url %>"><label><%= urls[url].longURL %></label></a>
-        <a href="/urls/<%= url %>/">Edit</a></br>
-
-        <button>DELETE</button>
-
+        <label><%= url %></label><a href="/u/<%= url %>"><label><%= urls[url].longURL %></label></a>
+        <% if (user.id === urls[url].userID) { %>
+          <a href="/urls/<%= url %>/">Edit</a></br>
+          <button>DELETE</button>
+        <% } %>
       </form></br>
     <% } %>
   <% } %>
