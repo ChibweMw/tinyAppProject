@@ -57,8 +57,13 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const currentUser = req.cookies;
-  let templateVars = { urls: urlsForUser(currentUser['user_id']), user: users[req.cookies["user_id"]] };
-  res.render("urls_index", templateVars);
+  if (currentUser['user_id']) {
+    let templateVars = { urls: urlsForUser(currentUser['user_id']), user: users[req.cookies["user_id"]] };
+    res.render("urls_index", templateVars);
+  } else {
+    let templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
+    res.render("urls_index", templateVars);
+  }
 });
 
 app.get("/urls/new", (req, res) => {
