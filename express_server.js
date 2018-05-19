@@ -146,18 +146,20 @@ app.post("/urls", (req, res) => {
 //login
 app.post("/login", (req, res) => {
   logUserIn(req, res);
-  loginError(req, res);
+  // loginError(req, res);
 });
 
 function logUserIn (req,res) {
+  console.log("LOGGINSSS")
   for (let id in users) {
-    console.log(users[id].hashedPassword);
-    if (req.body.email === users[id].email && bcrypt.compareSync(req.body.password, users[id].hashedPassword)) {
+    console.log("Hashed ", users[id].password, "Body ", req.body.password);
+    if (req.body.email === users[id].email && bcrypt.compareSync(req.body.password, users[id].password)) {
       res.cookie("user_id", users[id].id);
       res.redirect("/urls");
       return;
     }
   }
+  loginError(req, res)
 }
 
 function loginError(req, res) {
