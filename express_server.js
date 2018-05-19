@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cookies = require("cookie-parser");
 const app = express();
 const PORT = process.env.PORT || 8080; //defaults to 8080
+const bcrypt = require("bcrypt");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookies());
@@ -15,16 +16,16 @@ let urlDatabase = {
 };
 
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
-  },
- "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
-  }
+ //  "userRandomID": {
+ //    id: "userRandomID",
+ //    email: "user@example.com",
+ //    password: "purple-monkey-dinosaur"
+ //  },
+ // "user2RandomID": {
+ //    id: "user2RandomID",
+ //    email: "user2@example.com",
+ //    password: "dishwasher-funk"
+ //  }
 }
 
 function generateRandomString(num) {
@@ -126,7 +127,9 @@ app.post("/register" , (req, res) => {
       }
     }
     let newUserId = generateRandomString(9);
-    users[newUserId] = { id : newUserId, email : req.body.email,  password : req.body.password };
+    const password = req.body.password;
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    users[newUserId] = { id : newUserId, email : req.body.email,  password : hashedPassword };
     res.cookie("user_id", newUserId);
     res.redirect("/urls");
   }
@@ -148,7 +151,8 @@ app.post("/login", (req, res) => {
 
 function logUserIn (req,res) {
   for (let id in users) {
-    if (req.body.email === users[id].email && req.body.password === users[id].password) {
+    console.log(users[id].hashedPassword);
+    if (req.body.email === users[id].email && bcrypt.compareSync(req.body.password, users[id].hashedPassword)) {
       res.cookie("user_id", users[id].id);
       res.redirect("/urls");
       return;
@@ -158,11 +162,9 @@ function logUserIn (req,res) {
 
 function loginError(req, res) {
   for (let id in users) {
-    if (req.body.email !== users[id].email || req.body.password !== users[id].password) {
-      console.log("Submitted :", req.body, "Valid :", users[id]);
-      res.status(403).send("Wrong email or password.");
-      return;
-    }
+    console.log("Submitted :", req.body, "Valid :", users[id]);
+    res.status(403).send("Wrong email or password.");
+    return;
   }
 }
 
@@ -183,6 +185,7 @@ app.post("/urls/:id", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   let id = req.params.id
+  console.log(id);
   delete urlDatabase[id];
   res.redirect("/urls");
 });

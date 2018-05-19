@@ -22,7 +22,7 @@
     <% } %>
   <% } else { %>
     <% for (let url in urls) { %>
-      <form method="POST" action="/urls/<%= urls[url].longURL %>/delete">
+      <form>
         <a href="/u/<%= url %>"><label><%= url %></label></a></br>
         <label><%= urls[url].longURL %></label>
       </form></br>
