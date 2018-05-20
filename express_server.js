@@ -79,7 +79,12 @@ app.get("/u/:shortURL", (req, res) => {
 
 //user registration
 app.get("/register", (req, res) => {
-  res.render("users_register")
+  const currentUser = req.session;
+  if (currentUser['user_id']) {
+    res.redirect("/urls");
+  } else {
+    res.render("users_register");
+  }
 });
 
 //login page
@@ -96,7 +101,10 @@ app.get("/urls/:id", (req, res) => {
   const currentUser = req.session['user_id'];
   let templateVars = req.params.id;
   if (currentUser === urlDatabase[templateVars].userID) {
-  res.render("urls_show", { shortURL : templateVars, urls : urlDatabase[templateVars].longURL , user: users[req.session['user_id']]});
+    res.render("urls_show", { shortURL : templateVars,
+                              urls : urlDatabase[templateVars].longURL ,
+                              user: users[req.session['user_id']]
+    });
   } else {
     res.redirect("/login");
   }
