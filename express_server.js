@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require("body-parser");
-const cookies = require("cookie-parser");
 const cookieSession = require("cookie-session");
 const app = express();
 const PORT = process.env.PORT || 8080; //defaults to 8080
@@ -9,7 +8,8 @@ const bcrypt = require("bcrypt");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({
   name : "session",
-  keys: ['key1', 'key2']
+  keys: ['key1', 'key2'],
+  maxAge: 30000
 }));
 
 app.set("view engine", "ejs");
@@ -62,6 +62,9 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+
+  console.log(`Session ID > ${req.session['user_id']}`);
+
   const currentUser = req.session;
   if (currentUser['user_id']) {
     let templateVars = { user: users[currentUser["user_id"]] };
@@ -88,7 +91,7 @@ app.get("/register", (req, res) => {
 });
 
 //login page
-app.get("/login", (req, res) => {
+app.get("/login", (req, res) => {  
   if (!req.session['user_id']) {
     res.render("users_login");
   } else {
@@ -174,5 +177,5 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}! YO!`);
+  console.log(`'TinyApp' listening on port ${PORT}!`);
 });

@@ -5,7 +5,7 @@
 </head>
 <body>
 <header>
-  <% include ./partials/_header %>
+  <%- include('partials/_header') %>
 </header>
   <form method="POST" action="/urls/<%= shortURL %>">
     <label for="name">SHORTurl: <%= shortURL %></label></br>
