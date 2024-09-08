@@ -9,7 +9,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({
   name : "session",
   keys: ['key1', 'key2'],
-  maxAge: 30000
+  maxAge: 300000
 }));
 
 app.set("view engine", "ejs");

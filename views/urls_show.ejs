@@ -22,24 +22,26 @@
         </p>
       </div>
       <div class="card text-center">
-        <div class="card-header"></div>
-        <div class="card-body">
-          <form class="form-inline" method="POST" action="/urls/<%= shortURL %>" >
-            <div class="form-group mb-2">
-              <label for="name">Edit the URL:</label>
-              <input
-                class="form-control"
-                type="text"
-                name="newUrl"
-                placeholder="http://"
-                style="width: 300px; margin: 1em"
-              />
-              <button type="submit" class="btn btn-primary">Update</button>
-            </div>
-          </form>
+        <div class="card-footer">
+          <h5>Edit</h5>
+          <div class="container d-flex justify-content-center">
+            <form class="form-inline" method="POST" action="/urls/<%= shortURL %>" >
+              <div class="form-group mb-2">
+                <label for="newUrl-Input" class="col-form-label">New URL: </label>
+                <input 
+                  id="newUrl-Input"
+                  class="form-control"
+                  type="text"
+                  name="newUrl"
+                  placeholder="http://"
+                  style="width: 300px; margin: 0em 1em"
+                />
+                <button type="submit" class="btn btn-primary">Update</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-      <div class="card-footer text-muted"></div>
     </div>
     <!-- Bootstrap JS -->
     <script
