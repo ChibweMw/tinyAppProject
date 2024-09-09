@@ -19,12 +19,19 @@
       </div>
     </div>
     <div class="navbar-nav d-flex flex-row-reverse">
+      <% if (user && user.id) { %>
+      <form class="nav-item form-inline" method="POST" action="/logout">
+        <button class="btn btn-outline-dark ml-1">Logout</button>
+      </form>
+      <label class="nav-item"><%= user.email %></label>
+      <% } else { %>
       <form class="form-inline" method="GET" action="/register">
         <button class="btn btn-dark ml-1" type="submit">Register</button>
       </form>
       <form class="form-inline" method="GET" action="/login">
         <button class="btn btn-outline-dark ml-1" type="submit">Login</button>
       </form>
+      <% } %>
     </div>
   </nav>
 </header>

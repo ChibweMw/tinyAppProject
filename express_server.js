@@ -62,10 +62,10 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  const currentUser = req.session;
 
   console.log(`Session ID > ${req.session['user_id']}`);
-
-  const currentUser = req.session;
+  
   if (currentUser['user_id']) {
     let templateVars = { user: users[currentUser["user_id"]] };
     res.render("urls_new", templateVars);
@@ -86,14 +86,18 @@ app.get("/register", (req, res) => {
   if (currentUser['user_id']) {
     res.redirect("/urls");
   } else {
-    res.render("users_register");
+    res.render("users_register", {
+      user: users[req.session['user_id']]
+    });
   }
 });
 
 //login page
 app.get("/login", (req, res) => {  
   if (!req.session['user_id']) {
-    res.render("users_login");
+    res.render("users_login",{
+      user: users[req.session['user_id']]
+    });
   } else {
     res.redirect("/urls");
   }
