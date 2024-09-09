@@ -175,9 +175,12 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  let id = req.params.id;
-  delete urlDatabase[id];
-  res.redirect("/urls");
+  const currentUser = req.session;
+  if (currentUser['user_id']) {
+    let id = req.params.id;
+    delete urlDatabase[id];
+    res.redirect("/urls");
+  }
 });
 
 app.listen(PORT, () => {
