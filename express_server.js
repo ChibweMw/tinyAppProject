@@ -56,8 +56,7 @@ app.get("/urls", (req, res) => {
     let templateVars = { urls: urlsForUser(currentUser['user_id']), user: users[req.session["user_id"]] };
     res.render("urls_index", templateVars);
   } else {
-    let templateVars = { urls: urlDatabase, user: users[req.session['user_id']] };
-    res.render("urls_index", templateVars);
+    res.redirect("login");
   }
 });
 
