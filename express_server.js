@@ -74,9 +74,6 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   const currentUser = req.session;
-
-  console.log(`Session ID > ${req.session['user_id']}`);
-  
   if (currentUser['user_id']) {
     let templateVars = { user: users[currentUser["user_id"]] };
     res.render("urls_new", templateVars);
