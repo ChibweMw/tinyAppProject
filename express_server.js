@@ -41,6 +41,18 @@ function urlsForUser(id) {
   return userUrls;
 }
 
+function logUserIn (req,res) {
+  for (let id in users) {
+    if (req.body.email === users[id].email && bcrypt.compareSync(req.body.password, users[id].password)) {
+      req.session['user_id'] = users[id].id;
+      res.redirect("/urls");
+      return;
+    }
+  }
+  res.status(403).send("Wrong email or password.");
+  return;
+}
+
 app.get("/", (req, res) => {
   const currentUser = req.session;
   if (currentUser['user_id']) {
@@ -119,11 +131,11 @@ app.get("/urls/:id", (req, res) => {
 app.post("/register" , (req, res) => {
   //add new user to `users` object
   if (!req.body.email || !req.body.password) {
-    res.status(400).send("please fill in both fields");
+    res.status(400).send("Please fill in both fields.\n");
   } else if (req.body.email && req.body.password) {
     for (let id in users) {
       if (req.body.email === users[id].email) {
-        res.status(400).send("That email is already in use.");
+        res.status(400).send("That email is already in use.\n");
         return;
       }
     }
@@ -138,9 +150,19 @@ app.post("/register" , (req, res) => {
 
 //post new urls
 app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString(6);
-  urlDatabase[shortURL] = { userID : req.session["user_id"], longURL : req.body.longURL };
-  res.redirect("/urls");
+  const currentUser = req.session;
+  if (currentUser['user_id']){
+    let shortURL = generateRandomString(6);
+    let newLongURL = req.body.longURL;
+    if (newLongURL) {
+      urlDatabase[shortURL] = { userID : req.session["user_id"], longURL : req.body.longURL };
+      res.redirect("/urls");
+    } else {
+      res.status(400).send("Must provide long URL to be shortened.\n");
+    }
+  } else {
+    res.status(403).send("Must be logged in to create new short URLs.\n");
+  }
 });
 
 //login
@@ -148,19 +170,8 @@ app.post("/login", (req, res) => {
   logUserIn(req, res);
 });
 
-function logUserIn (req,res) {
-  for (let id in users) {
-    if (req.body.email === users[id].email && bcrypt.compareSync(req.body.password, users[id].password)) {
-      req.session['user_id'] = users[id].id;
-      res.redirect("/urls");
-      return;
-    }
-  }
-  res.status(403).send("Wrong email or password.");
-  return;
-}
 
-//logout
+
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
@@ -168,9 +179,19 @@ app.post("/logout", (req, res) => {
 
 //POST request for url update use newUrl
 app.post("/urls/:id", (req, res) => {
-  let templateVars = req.params.id;
-  urlDatabase[templateVars].longURL = req.body.newUrl;
-  res.redirect("/urls");
+  const currentUser = req.session;
+  if (currentUser['user_id']){
+    let templateVars = req.params.id;
+    let updatedURL = req.body.newUrl;
+    if (updatedURL){
+      urlDatabase[templateVars].longURL = req.body.newUrl;
+      res.redirect("/urls");
+    } else {
+      res.status(400).send("Update failed. No new URL provided.");
+    }
+  } else {
+    res.status(403).send("Must be logged in to update URLs.");
+  }
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -179,6 +200,8 @@ app.post("/urls/:id/delete", (req, res) => {
     let id = req.params.id;
     delete urlDatabase[id];
     res.redirect("/urls");
+  } else {
+    res.status(403).send("Must be logged in to delete urls.\n");
   }
 });
 
