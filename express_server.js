@@ -1,10 +1,12 @@
 const express = require('express');
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
+const methodoverride = require("method-override");
 const app = express();
 const PORT = process.env.PORT || 8080; //defaults to 8080
 const bcrypt = require("bcrypt");
 
+app.use(methodoverride('X-HTTP-Method-Override'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({
   name : "session",
@@ -175,6 +177,7 @@ app.post("/logout", (req, res) => {
 });
 
 //POST request for url update use newUrl
+// Change to 'PUT' and app.put
 app.post("/urls/:id", (req, res) => {
   const currentUser = req.session;
   if (currentUser['user_id']){
@@ -191,6 +194,7 @@ app.post("/urls/:id", (req, res) => {
   }
 });
 
+// Change to 'DELETE' and app.delete
 app.post("/urls/:id/delete", (req, res) => {
   const currentUser = req.session;
   if (currentUser['user_id']) {
