@@ -176,8 +176,7 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-//POST request for url update use newUrl
-// Change to 'PUT' and app.put
+//POST request for url update
 app.put("/urls/:id", (req, res) => {
   const currentUser = req.session;
   if (currentUser['user_id']){
@@ -194,7 +193,6 @@ app.put("/urls/:id", (req, res) => {
   }
 });
 
-// Change to 'DELETE' and app.delete
 app.delete("/urls/:id/delete", (req, res) => {
   const currentUser = req.session;
   if (currentUser['user_id']) {
